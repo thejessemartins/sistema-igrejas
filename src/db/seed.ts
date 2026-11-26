@@ -2,7 +2,7 @@ import "dotenv/config";
 import { count, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { assets, cellMeetingAttendance, cellMeetings, cellMembers, cells, events, financialCategories, financialTransactions, memberFamilyLinks, members, ministries, ministryMembers, notices, reservableResources, reservations, sermons, socialProjects, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
+import { assets, cellMeetingAttendance, cellMeetings, cellMembers, cells, ceremonies, events, financialCategories, financialTransactions, memberFamilyLinks, members, ministries, ministryMembers, notices, reservableResources, reservations, sermons, socialProjects, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
 import type { Role } from "@/lib/permissions";
 
 interface SeedUser {
@@ -493,6 +493,20 @@ async function main() {
       { title: "Rascunho: Próxima Série", preacherText: "Pr. João", preachedAt: today, bibleReference: "Salmos 23", seriesName: "Salmos", summary: "Em preparação.", isPublished: false },
     ]);
     console.log("6 sermões fictícios criados.");
+  }
+
+  const [{ total: cerTotal }] = await db
+    .select({ total: count() })
+    .from(ceremonies);
+  if (cerTotal === 0) {
+    const future = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+    await db.insert(ceremonies).values([
+      { kind: "batismo", title: "Batismo nas Águas", scheduledAt: future, status: "em_preparacao", requestedByText: "Secretaria" },
+      { kind: "apresentacao_crianca", title: "Apresentação de Crianças", scheduledAt: future, status: "confirmada", requestedByText: "Família Silva" },
+      { kind: "casamento", title: "Cerimônia de Casamento", scheduledAt: future, status: "solicitada", requestedByText: "Noivos" },
+      { kind: "memorial", title: "Culto Memorial", scheduledAt: new Date(), status: "realizada", requestedByText: "Família" },
+    ]);
+    console.log("4 cerimônias fictícias criadas.");
   }
 
   console.log("Seed concluído com sucesso.");
