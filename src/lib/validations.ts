@@ -297,3 +297,19 @@ export const eventSchema = z
       path: ["endsAt"],
     }
   );
+
+// --- Ministérios e Escalas ---
+
+export const ministrySchema = z.object({
+  name: z.string().trim().min(2, "Nome do ministério é obrigatório"),
+  description: z.string().trim().optional().nullable(),
+  leaderMemberId: z.string().uuid().optional().nullable(),
+  isActive: z.boolean().default(true),
+});
+
+export const scheduleSchema = z.object({
+  eventId: z.string().uuid("Selecione o culto/evento"),
+  ministryId: z.string().uuid("Selecione o ministério"),
+  title: z.string().trim().min(2, "Título da escala é obrigatório"),
+  notes: z.string().trim().optional().nullable(),
+});

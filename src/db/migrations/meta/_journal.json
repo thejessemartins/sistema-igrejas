@@ -43,6 +43,13 @@
       "when": 1795658847687,
       "tag": "0005_spicy_ironclad",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795659068281,
+      "tag": "0006_bizarre_argent",
+      "breakpoints": true
     }
   ]
 }

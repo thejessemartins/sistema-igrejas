@@ -2,7 +2,7 @@ import "dotenv/config";
 import { count, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { cellMeetingAttendance, cellMeetings, cellMembers, cells, events, memberFamilyLinks, members, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
+import { cellMeetingAttendance, cellMeetings, cellMembers, cells, events, memberFamilyLinks, members, ministries, ministryMembers, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
 import type { Role } from "@/lib/permissions";
 
 interface SeedUser {
@@ -229,6 +229,33 @@ async function main() {
       },
     ]);
     console.log("4 cultos/eventos fictícios criados.");
+  }
+
+  const [{ total: ministriesTotal }] = await db
+    .select({ total: count() })
+    .from(ministries);
+  if (ministriesTotal === 0) {
+    const allMembers = await db.select({ id: members.id }).from(members).limit(8);
+    const insertedMinistries = await db
+      .insert(ministries)
+      .values([
+        { name: "Louvor", description: "Equipe de música e adoração", leaderMemberId: allMembers[0]?.id ?? null },
+        { name: "Recepção", description: "Boas-vindas e acolhimento", leaderMemberId: allMembers[1]?.id ?? null },
+        { name: "Mídia", description: "Projeção, transmissão e som", leaderMemberId: allMembers[2]?.id ?? null },
+        { name: "Infantil", description: "Ministério com crianças", leaderMemberId: allMembers[3]?.id ?? null },
+      ])
+      .returning({ id: ministries.id });
+
+    const today = new Date().toISOString().slice(0, 10);
+    if (allMembers.length >= 4) {
+      await db.insert(ministryMembers).values([
+        { ministryId: insertedMinistries[0].id, memberId: allMembers[0].id, roleInMinistry: "Vocal", joinedAt: today },
+        { ministryId: insertedMinistries[0].id, memberId: allMembers[1].id, roleInMinistry: "Teclado", joinedAt: today },
+        { ministryId: insertedMinistries[1].id, memberId: allMembers[2].id, roleInMinistry: "Recepção", joinedAt: today },
+        { ministryId: insertedMinistries[2].id, memberId: allMembers[3].id, roleInMinistry: "Projeção", joinedAt: today },
+      ]);
+    }
+    console.log(`${insertedMinistries.length} ministérios fictícios criados.`);
   }
 
   console.log("Seed concluído com sucesso.");
