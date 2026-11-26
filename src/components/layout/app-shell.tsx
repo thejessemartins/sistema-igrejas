@@ -8,6 +8,7 @@ import {
   Users,
   UserPlus,
   Home,
+  CheckSquare,
   Wallet,
   Calendar,
   Shield,
@@ -81,6 +82,12 @@ const navGroups: NavGroup[] = [
         modulo: "financeiro",
       },
       { label: "Eventos", href: "/cultos", icon: Calendar, modulo: "cultos" },
+      {
+        label: "Presença",
+        href: "/presenca",
+        icon: CheckSquare,
+        modulo: "presenca",
+      },
     ],
   },
   {
