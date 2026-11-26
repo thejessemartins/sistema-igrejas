@@ -2,7 +2,7 @@ import "dotenv/config";
 import { count, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { cellMeetingAttendance, cellMeetings, cellMembers, cells, events, financialCategories, financialTransactions, memberFamilyLinks, members, ministries, ministryMembers, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
+import { cellMeetingAttendance, cellMeetings, cellMembers, cells, events, financialCategories, financialTransactions, memberFamilyLinks, members, ministries, ministryMembers, notices, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
 import type { Role } from "@/lib/permissions";
 
 interface SeedUser {
@@ -347,6 +347,57 @@ async function main() {
       },
     ]);
     console.log("Categorias e 2 meses de lançamentos financeiros criados.");
+  }
+
+  const [{ total: noticesTotal }] = await db
+    .select({ total: count() })
+    .from(notices);
+  if (noticesTotal === 0) {
+    const [adminUser] = await db.select({ id: user.id }).from(user).limit(1);
+    const [firstCell] = await db.select({ id: cells.id }).from(cells).limit(1);
+    const [firstMinistry] = await db.select({ id: ministries.id }).from(ministries).limit(1);
+
+    await db.insert(notices).values([
+      {
+        title: "Bem-vindos ao Mural de Avisos",
+        body: "Este é o canal oficial de comunicação interna da igreja.",
+        audienceType: "todos",
+        priority: "importante",
+        isPinned: true,
+        authorUserId: adminUser?.id ?? null,
+      },
+      {
+        title: "Ensaio Geral do Louvor",
+        body: "Sábado às 18h no templo principal.",
+        audienceType: firstMinistry ? "ministerio" : "todos",
+        ministryId: firstMinistry?.id ?? null,
+        priority: "normal",
+        authorUserId: adminUser?.id ?? null,
+      },
+      {
+        title: "Reunião de Célula Especial",
+        body: "Nesta semana teremos momento de oração e comunhão.",
+        audienceType: firstCell ? "celula" : "todos",
+        cellId: firstCell?.id ?? null,
+        priority: "normal",
+        authorUserId: adminUser?.id ?? null,
+      },
+      {
+        title: "Campanha de Alimentos",
+        body: "Traga 1kg de alimento não perecível no próximo domingo.",
+        audienceType: "todos",
+        priority: "urgente",
+        authorUserId: adminUser?.id ?? null,
+      },
+      {
+        title: "Reunião de Obreiros",
+        body: "Encontro mensal após o culto de domingo.",
+        audienceType: "todos",
+        priority: "normal",
+        authorUserId: adminUser?.id ?? null,
+      },
+    ]);
+    console.log("5 avisos fictícios criados.");
   }
 
   console.log("Seed concluído com sucesso.");

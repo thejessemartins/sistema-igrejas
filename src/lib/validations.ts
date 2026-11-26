@@ -342,3 +342,37 @@ export const transactionSchema = z.object({
   dueDate: z.string().optional().nullable(),
   paidAt: z.string().optional().nullable(),
 });
+
+// --- Avisos ---
+
+export const NOTICE_AUDIENCES = [
+  "todos",
+  "ministerio",
+  "celula",
+  "papeis",
+] as const;
+
+export const NOTICE_PRIORITIES = ["normal", "importante", "urgente"] as const;
+
+export const noticeSchema = z
+  .object({
+    title: z.string().trim().min(2, "Título é obrigatório"),
+    body: z.string().trim().min(2, "Conteúdo é obrigatório"),
+    audienceType: z.enum(NOTICE_AUDIENCES).default("todos"),
+    ministryId: z.string().uuid().optional().nullable(),
+    cellId: z.string().uuid().optional().nullable(),
+    priority: z.enum(NOTICE_PRIORITIES).default("normal"),
+    publishAt: z.string().optional().nullable(),
+    expiresAt: z.string().optional().nullable(),
+    isPinned: z.boolean().default(false),
+  })
+  .refine(
+    (d) =>
+      !d.expiresAt ||
+      !d.publishAt ||
+      new Date(d.expiresAt) > new Date(d.publishAt),
+    {
+      message: "Data de expiração deve ser posterior à publicação",
+      path: ["expiresAt"],
+    }
+  );
