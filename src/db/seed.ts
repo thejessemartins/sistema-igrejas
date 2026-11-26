@@ -2,7 +2,7 @@ import "dotenv/config";
 import { count, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { cellMeetingAttendance, cellMeetings, cellMembers, cells, memberFamilyLinks, members, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
+import { cellMeetingAttendance, cellMeetings, cellMembers, cells, events, memberFamilyLinks, members, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
 import type { Role } from "@/lib/permissions";
 
 interface SeedUser {
@@ -183,6 +183,52 @@ async function main() {
 
       console.log(`${insertedCells.length} células fictícias criadas com reuniões.`);
     }
+  }
+
+  const [{ total: eventsTotal }] = await db.select({ total: count() }).from(events);
+  if (eventsTotal === 0) {
+    const now = new Date();
+    const past1 = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const past2 = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
+    const future1 = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const future2 = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+    await db.insert(events).values([
+      {
+        title: "Culto de Celebração",
+        eventType: "culto_domingo",
+        startsAt: past1,
+        location: "Templo Principal",
+        theme: "Vivendo pela Fé",
+        preacherText: "Pr. João",
+        status: "realizado",
+      },
+      {
+        title: "Culto de Oração",
+        eventType: "culto_oracao",
+        startsAt: past2,
+        location: "Templo Principal",
+        theme: "Clamor pela Cidade",
+        status: "realizado",
+      },
+      {
+        title: "Culto de Domingo",
+        eventType: "culto_domingo",
+        startsAt: future1,
+        location: "Templo Principal",
+        theme: "Esperança Viva",
+        status: "agendado",
+      },
+      {
+        title: "Santa Ceia do Senhor",
+        eventType: "santa_ceia",
+        startsAt: future2,
+        location: "Templo Principal",
+        theme: "Comunhão e Gratidão",
+        status: "agendado",
+      },
+    ]);
+    console.log("4 cultos/eventos fictícios criados.");
   }
 
   console.log("Seed concluído com sucesso.");

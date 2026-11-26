@@ -1,6 +1,7 @@
 import { pgTable, uuid, text, timestamp, index } from "drizzle-orm/pg-core";
 import { members } from "./members";
 import { user } from "./auth";
+import { events } from "./events";
 
 export const visitors = pgTable(
   "visitors",
@@ -38,7 +39,9 @@ export const visitorVisits = pgTable("visitor_visits", {
   visitorId: uuid("visitor_id")
     .notNull()
     .references(() => visitors.id, { onDelete: "cascade" }),
-  eventId: uuid("event_id"), // FK real será adicionada no Prompt 5
+  eventId: uuid("event_id").references(() => events.id, {
+    onDelete: "set null",
+  }),
   visitedAt: timestamp("visited_at").notNull().defaultNow(),
   notes: text("notes"),
 });

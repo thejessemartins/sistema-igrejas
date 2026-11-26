@@ -80,7 +80,7 @@ const navGroups: NavGroup[] = [
         icon: Wallet,
         modulo: "financeiro",
       },
-      { label: "Eventos", href: "#eventos", icon: Calendar, modulo: "cultos" },
+      { label: "Eventos", href: "/cultos", icon: Calendar, modulo: "cultos" },
     ],
   },
   {

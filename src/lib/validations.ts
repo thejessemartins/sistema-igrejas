@@ -246,3 +246,54 @@ export const cellMeetingSchema = z.object({
   topic: z.string().trim().min(2, "Tema é obrigatório"),
   notes: z.string().trim().optional().nullable(),
 });
+
+// --- Cultos e Eventos ---
+
+export const EVENT_TYPES = [
+  "culto_domingo",
+  "culto_oracao",
+  "vigilia",
+  "batismo",
+  "santa_ceia",
+  "ensaio",
+  "reuniao",
+  "evento_especial",
+  "outro",
+] as const;
+export type EventType = (typeof EVENT_TYPES)[number];
+
+export const EVENT_TYPE_LABELS: Record<EventType, string> = {
+  culto_domingo: "Culto de Domingo",
+  culto_oracao: "Culto de Oração",
+  vigilia: "Vigília",
+  batismo: "Batismo",
+  santa_ceia: "Santa Ceia",
+  ensaio: "Ensaio",
+  reuniao: "Reunião",
+  evento_especial: "Evento Especial",
+  outro: "Outro",
+};
+
+export const EVENT_STATUSES = ["agendado", "realizado", "cancelado"] as const;
+export type EventStatus = (typeof EVENT_STATUSES)[number];
+
+export const eventSchema = z
+  .object({
+    title: z.string().trim().min(2, "Título é obrigatório"),
+    eventType: z.enum(EVENT_TYPES),
+    startsAt: z.string().min(1, "Data/hora de início é obrigatória"),
+    endsAt: z.string().optional().nullable(),
+    location: z.string().trim().optional().nullable(),
+    theme: z.string().trim().optional().nullable(),
+    preacherText: z.string().trim().optional().nullable(),
+    preacherMemberId: z.string().uuid().optional().nullable(),
+    description: z.string().trim().optional().nullable(),
+    repeatWeeks: z.coerce.number().int().min(1).max(52).default(1),
+  })
+  .refine(
+    (d) => !d.endsAt || new Date(d.endsAt) > new Date(d.startsAt),
+    {
+      message: "Data/hora de término deve ser maior que a de início",
+      path: ["endsAt"],
+    }
+  );
