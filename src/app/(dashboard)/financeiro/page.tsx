@@ -36,6 +36,12 @@ export default async function FinanceiroPage() {
             >
               Fechamento
             </Link>
+            <Link
+              href="/financeiro/orcamento"
+              className="inline-flex h-8 items-center rounded-[2px] border border-neutral-200 bg-neutral-0 px-3 text-[11px] font-bold uppercase tracking-wider text-neutral-800 hover:bg-neutral-50"
+            >
+              Orçamento
+            </Link>
           </div>
         }
       />
