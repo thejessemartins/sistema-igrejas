@@ -2,7 +2,7 @@ import "dotenv/config";
 import { count, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { assets, cellMeetingAttendance, cellMeetings, cellMembers, cells, events, financialCategories, financialTransactions, memberFamilyLinks, members, ministries, ministryMembers, notices, reservableResources, reservations, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
+import { assets, cellMeetingAttendance, cellMeetings, cellMembers, cells, events, financialCategories, financialTransactions, memberFamilyLinks, members, ministries, ministryMembers, notices, reservableResources, reservations, socialProjects, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
 import type { Role } from "@/lib/permissions";
 
 interface SeedUser {
@@ -451,6 +451,32 @@ async function main() {
       ]);
     }
     console.log("4 recursos e 6 reservas fictícias criados.");
+  }
+
+  const [{ total: projTotal }] = await db
+    .select({ total: count() })
+    .from(socialProjects);
+  if (projTotal === 0) {
+    const today = new Date().toISOString().slice(0, 10);
+    await db.insert(socialProjects).values([
+      {
+        name: "Campanha do Agasalho",
+        description: "Arrecadação de cobertores e agasalhos para famílias da região.",
+        kind: "acao_social",
+        startsAt: today,
+        goalCents: 500000,
+        status: "ativo",
+      },
+      {
+        name: "Missões Urbanas",
+        description: "Apoio a missionários locais e distribuição de cestas básicas.",
+        kind: "missoes",
+        startsAt: today,
+        goalCents: 1000000,
+        status: "ativo",
+      },
+    ]);
+    console.log("2 projetos sociais fictícios criados.");
   }
 
   console.log("Seed concluído com sucesso.");

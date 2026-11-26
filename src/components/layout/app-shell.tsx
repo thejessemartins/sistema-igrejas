@@ -129,6 +129,12 @@ const navGroups: NavGroup[] = [
         icon: Calendar,
         modulo: "dashboard",
       },
+      {
+        label: "Missões",
+        href: "/missoes",
+        icon: Users,
+        modulo: "dashboard",
+      },
     ],
   },
   {
