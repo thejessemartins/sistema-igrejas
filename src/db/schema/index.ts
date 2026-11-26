@@ -14,3 +14,4 @@ export * from "./reservations";
 export * from "./missions";
 export * from "./sermons";
 export * from "./ceremonies";
+export * from "./reading";

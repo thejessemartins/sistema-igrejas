@@ -2,7 +2,7 @@ import "dotenv/config";
 import { count, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { assets, cellMeetingAttendance, cellMeetings, cellMembers, cells, ceremonies, events, financialCategories, financialTransactions, memberFamilyLinks, members, ministries, ministryMembers, notices, reservableResources, reservations, sermons, socialProjects, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
+import { assets, cellMeetingAttendance, cellMeetings, cellMembers, cells, ceremonies, events, financialCategories, financialTransactions, memberFamilyLinks, members, ministries, ministryMembers, notices, readingPlanDays, readingPlans, reservableResources, reservations, sermons, socialProjects, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
 import type { Role } from "@/lib/permissions";
 
 interface SeedUser {
@@ -507,6 +507,31 @@ async function main() {
       { kind: "memorial", title: "Culto Memorial", scheduledAt: new Date(), status: "realizada", requestedByText: "Família" },
     ]);
     console.log("4 cerimônias fictícias criadas.");
+  }
+
+  const [{ total: rpTotal }] = await db
+    .select({ total: count() })
+    .from(readingPlans);
+  if (rpTotal === 0) {
+    const [plan] = await db
+      .insert(readingPlans)
+      .values({
+        title: "Evangelho em 30 Dias",
+        description: "Plano diário de leitura dos Evangelhos e reflexões.",
+        durationDays: 30,
+        isActive: true,
+      })
+      .returning({ id: readingPlans.id });
+
+    const days = Array.from({ length: 30 }, (_, i) => ({
+      planId: plan.id,
+      dayNumber: i + 1,
+      bibleReference: `João ${((i % 21) + 1)}`,
+      devotionalTitle: `Reflexão Dia ${i + 1}`,
+      devotionalBody: "Medite na passagem do dia e ore pela igreja.",
+    }));
+    await db.insert(readingPlanDays).values(days);
+    console.log("Plano de leitura de 30 dias criado.");
   }
 
   console.log("Seed concluído com sucesso.");

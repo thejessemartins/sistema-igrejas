@@ -147,6 +147,12 @@ const navGroups: NavGroup[] = [
         icon: Church,
         modulo: "dashboard",
       },
+      {
+        label: "Leitura Bíblica",
+        href: "/leitura",
+        icon: CheckSquare,
+        modulo: "dashboard",
+      },
     ],
   },
   {
