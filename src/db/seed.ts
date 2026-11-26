@@ -2,7 +2,7 @@ import "dotenv/config";
 import { count, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { assets, cellMeetingAttendance, cellMeetings, cellMembers, cells, events, financialCategories, financialTransactions, memberFamilyLinks, members, ministries, ministryMembers, notices, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
+import { assets, cellMeetingAttendance, cellMeetings, cellMembers, cells, events, financialCategories, financialTransactions, memberFamilyLinks, members, ministries, ministryMembers, notices, reservableResources, reservations, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
 import type { Role } from "@/lib/permissions";
 
 interface SeedUser {
@@ -417,6 +417,40 @@ async function main() {
       { name: "Mesa de Reunião Sala Pastoral", category: "moveis", patrimonyCode: "PAT-012", locationText: "Sala Pastoral", condition: "novo", acquisitionValueCents: 220000 },
     ]);
     console.log("12 bens patrimoniais fictícios criados.");
+  }
+
+  const [{ total: resTotal }] = await db
+    .select({ total: count() })
+    .from(reservableResources);
+  if (resTotal === 0) {
+    const insertedRes = await db
+      .insert(reservableResources)
+      .values([
+        { name: "Templo Principal", kind: "sala", capacity: 250, locationText: "Térreo" },
+        { name: "Sala de Reuniões", kind: "sala", capacity: 20, locationText: "1º Andar" },
+        { name: "Auditório Infantil", kind: "sala", capacity: 50, locationText: "Anexo" },
+        { name: "Projetor Portátil", kind: "equipamento", locationText: "Mídia" },
+      ])
+      .returning({ id: reservableResources.id });
+
+    const [adminUser] = await db.select({ id: user.id }).from(user).limit(1);
+    if (adminUser && insertedRes.length >= 2) {
+      const now = new Date();
+      const d1 = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
+      const d2 = new Date(d1.getTime() + 2 * 60 * 60 * 1000);
+      const d3 = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+      const d4 = new Date(d3.getTime() + 2 * 60 * 60 * 1000);
+
+      await db.insert(reservations).values([
+        { resourceId: insertedRes[0].id, title: "Ensaio Geral", requestedByUserId: adminUser.id, startsAt: d1, endsAt: d2, status: "aprovada" },
+        { resourceId: insertedRes[1].id, title: "Reunião de Líderes", requestedByUserId: adminUser.id, startsAt: d1, endsAt: d2, status: "aprovada" },
+        { resourceId: insertedRes[1].id, title: "Conselho Pastoral", requestedByUserId: adminUser.id, startsAt: d3, endsAt: d4, status: "pendente" },
+        { resourceId: insertedRes[2].id, title: "Treinamento EBI", requestedByUserId: adminUser.id, startsAt: d3, endsAt: d4, status: "aprovada" },
+        { resourceId: insertedRes[3].id, title: "Célula Centro", requestedByUserId: adminUser.id, startsAt: d1, endsAt: d2, status: "pendente" },
+        { resourceId: insertedRes[0].id, title: "Vigília", requestedByUserId: adminUser.id, startsAt: d3, endsAt: d4, status: "cancelada" },
+      ]);
+    }
+    console.log("4 recursos e 6 reservas fictícias criados.");
   }
 
   console.log("Seed concluído com sucesso.");

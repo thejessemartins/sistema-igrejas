@@ -123,6 +123,12 @@ const navGroups: NavGroup[] = [
         icon: Briefcase,
         modulo: "membros",
       },
+      {
+        label: "Reservas",
+        href: "/reservas",
+        icon: Calendar,
+        modulo: "dashboard",
+      },
     ],
   },
   {
