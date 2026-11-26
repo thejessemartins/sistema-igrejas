@@ -2,7 +2,7 @@ import "dotenv/config";
 import { count, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { memberFamilyLinks, members, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
+import { cellMeetingAttendance, cellMeetings, cellMembers, cells, memberFamilyLinks, members, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
 import type { Role } from "@/lib/permissions";
 
 interface SeedUser {
@@ -113,6 +113,76 @@ async function main() {
       }))
     );
     console.log(`${insertedVisitors.length} visitantes fictícios criados.`);
+  }
+
+  const [{ total: cellsTotal }] = await db.select({ total: count() }).from(cells);
+  if (cellsTotal === 0) {
+    const allMembers = await db.select({ id: members.id }).from(members).limit(12);
+    if (allMembers.length >= 6) {
+      const insertedCells = await db
+        .insert(cells)
+        .values([
+          {
+            name: "Célula Esperança",
+            leaderMemberId: allMembers[0].id,
+            coLeaderMemberId: allMembers[1].id,
+            weekday: 3,
+            meetingTime: "20:00",
+            addressStreet: "Rua das Flores, 120",
+            addressDistrict: "Centro",
+            addressCity: "São Paulo",
+            isActive: true,
+          },
+          {
+            name: "Célula Vida Nova",
+            leaderMemberId: allMembers[3].id,
+            weekday: 4,
+            meetingTime: "19:30",
+            addressStreet: "Av. Brasil, 450",
+            addressDistrict: "Jardim América",
+            addressCity: "São Paulo",
+            isActive: true,
+          },
+          {
+            name: "Célula Betel",
+            leaderMemberId: allMembers[4].id,
+            weekday: 5,
+            meetingTime: "20:00",
+            addressStreet: "Rua da Paz, 88",
+            addressDistrict: "Vila Mariana",
+            addressCity: "São Paulo",
+            isActive: true,
+          },
+        ])
+        .returning({ id: cells.id });
+
+      const today = new Date().toISOString().slice(0, 10);
+      await db.insert(cellMembers).values([
+        { cellId: insertedCells[0].id, memberId: allMembers[0].id, joinedAt: today },
+        { cellId: insertedCells[0].id, memberId: allMembers[1].id, joinedAt: today },
+        { cellId: insertedCells[0].id, memberId: allMembers[2].id, joinedAt: today },
+        { cellId: insertedCells[1].id, memberId: allMembers[3].id, joinedAt: today },
+        { cellId: insertedCells[2].id, memberId: allMembers[4].id, joinedAt: today },
+      ]);
+
+      const [meeting] = await db
+        .insert(cellMeetings)
+        .values({
+          cellId: insertedCells[0].id,
+          meetingDate: today,
+          topic: "Estudo sobre Fé e Comunhão",
+          notes: "Reunião inicial do seed",
+        })
+        .returning({ id: cellMeetings.id });
+
+      await db.insert(cellMeetingAttendance).values([
+        { cellMeetingId: meeting.id, memberId: allMembers[0].id, status: "presente" },
+        { cellMeetingId: meeting.id, memberId: allMembers[1].id, status: "presente" },
+        { cellMeetingId: meeting.id, memberId: allMembers[2].id, status: "justificado" },
+      ]);
+
+      console.log(`${insertedCells.length} células fictícias criadas com reuniões.`);
+    }
   }
 
   console.log("Seed concluído com sucesso.");

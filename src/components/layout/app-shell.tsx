@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   Users,
   UserPlus,
+  Home,
   Wallet,
   Calendar,
   Shield,
@@ -60,6 +61,12 @@ const navGroups: NavGroup[] = [
         href: "/visitantes",
         icon: UserPlus,
         modulo: "visitantes",
+      },
+      {
+        label: "Células",
+        href: "/celulas",
+        icon: Home,
+        modulo: "celulas",
       },
       {
         label: "Aniversariantes",

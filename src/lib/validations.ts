@@ -208,3 +208,41 @@ export const visitorVisitSchema = z.object({
   visitedAt: z.string().optional().nullable(),
   notes: z.string().trim().optional().nullable(),
 });
+
+// --- Células ---
+
+export const WEEKDAYS = [
+  "Domingo",
+  "Segunda-feira",
+  "Terça-feira",
+  "Quarta-feira",
+  "Quinta-feira",
+  "Sexta-feira",
+  "Sábado",
+] as const;
+
+export const ATTENDANCE_STATUSES = [
+  "presente",
+  "ausente",
+  "justificado",
+] as const;
+export type AttendanceStatus = (typeof ATTENDANCE_STATUSES)[number];
+
+export const cellSchema = z.object({
+  name: z.string().trim().min(2, "Nome da célula é obrigatório"),
+  leaderMemberId: z.string().uuid("Selecione o líder da célula"),
+  coLeaderMemberId: z.string().uuid().optional().nullable(),
+  weekday: z.coerce.number().int().min(0).max(6),
+  meetingTime: z.string().min(4, "Informe o horário"),
+  addressStreet: z.string().trim().optional().nullable(),
+  addressDistrict: z.string().trim().optional().nullable(),
+  addressCity: z.string().trim().optional().nullable(),
+  isActive: z.boolean().default(true),
+});
+
+export const cellMeetingSchema = z.object({
+  cellId: z.string().uuid(),
+  meetingDate: z.string().min(1, "Data da reunião é obrigatória"),
+  topic: z.string().trim().min(2, "Tema é obrigatório"),
+  notes: z.string().trim().optional().nullable(),
+});
