@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { SeraCard } from "@/components/shared/sera-card";
-import { EVENT_TYPE_LABELS, EVENT_TYPES, type EventType } from "@/lib/validations";
+import { EVENT_TYPE_LABELS, EVENT_TYPES, type EventType } from "@/lib/event-constants";
 import { createEvent, updateEvent } from "@/server/actions/events";
 
 export interface EventFormValues {
