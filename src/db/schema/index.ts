@@ -12,3 +12,4 @@ export * from "./settings";
 export * from "./assets";
 export * from "./reservations";
 export * from "./missions";
+export * from "./sermons";

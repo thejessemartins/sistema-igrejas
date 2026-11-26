@@ -135,6 +135,12 @@ const navGroups: NavGroup[] = [
         icon: Users,
         modulo: "dashboard",
       },
+      {
+        label: "Sermões",
+        href: "/sermoes",
+        icon: Megaphone,
+        modulo: "dashboard",
+      },
     ],
   },
   {

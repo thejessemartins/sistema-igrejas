@@ -2,7 +2,7 @@ import "dotenv/config";
 import { count, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { assets, cellMeetingAttendance, cellMeetings, cellMembers, cells, events, financialCategories, financialTransactions, memberFamilyLinks, members, ministries, ministryMembers, notices, reservableResources, reservations, socialProjects, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
+import { assets, cellMeetingAttendance, cellMeetings, cellMembers, cells, events, financialCategories, financialTransactions, memberFamilyLinks, members, ministries, ministryMembers, notices, reservableResources, reservations, sermons, socialProjects, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
 import type { Role } from "@/lib/permissions";
 
 interface SeedUser {
@@ -477,6 +477,22 @@ async function main() {
       },
     ]);
     console.log("2 projetos sociais fictícios criados.");
+  }
+
+  const [{ total: sermonsTotal }] = await db
+    .select({ total: count() })
+    .from(sermons);
+  if (sermonsTotal === 0) {
+    const today = new Date().toISOString().slice(0, 10);
+    await db.insert(sermons).values([
+      { title: "A Graça que Transforma", preacherText: "Pr. João", preachedAt: today, bibleReference: "Efésios 2:8-10", seriesName: "Fundamentos", summary: "Estudo sobre a graça salvadora.", isPublished: true },
+      { title: "Fé em Tempos Difíceis", preacherText: "Pr. João", preachedAt: today, bibleReference: "Hebreus 11:1", seriesName: "Fundamentos", summary: "Perseverança na caminhada cristã.", isPublished: true },
+      { title: "O Bom Pastor", preacherText: "Pr. Marcos", preachedAt: today, bibleReference: "João 10:11", seriesName: "Evangelho de João", summary: "Cuidado e direção de Jesus.", isPublished: true },
+      { title: "Comunhão e Serviço", preacherText: "Pr. João", preachedAt: today, bibleReference: "Atos 2:42", seriesName: "Igreja Viva", summary: "A prática da igreja primitiva.", isPublished: true },
+      { title: "Oração que Move Montanhas", preacherText: "Pr. Marcos", preachedAt: today, bibleReference: "Tiago 5:16", seriesName: "Vida de Oração", summary: "Importância da intercessão.", isPublished: true },
+      { title: "Rascunho: Próxima Série", preacherText: "Pr. João", preachedAt: today, bibleReference: "Salmos 23", seriesName: "Salmos", summary: "Em preparação.", isPublished: false },
+    ]);
+    console.log("6 sermões fictícios criados.");
   }
 
   console.log("Seed concluído com sucesso.");
