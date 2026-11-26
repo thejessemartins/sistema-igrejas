@@ -165,3 +165,46 @@ export const linkFamilySchema = z.object({
   relatedMemberId: z.string().uuid(),
   relation: z.enum(FAMILY_RELATIONS),
 });
+
+// --- Visitantes ---
+
+export const FOLLOW_UP_STATUSES = [
+  "novo",
+  "em_contato",
+  "retornou",
+  "virou_membro",
+  "nao_retornou",
+] as const;
+export type FollowUpStatus = (typeof FOLLOW_UP_STATUSES)[number];
+
+export const FOLLOW_UP_LABELS: Record<FollowUpStatus, string> = {
+  novo: "Novo",
+  em_contato: "Em contato",
+  retornou: "Retornou",
+  virou_membro: "Virou membro",
+  nao_retornou: "Não retornou",
+};
+
+export const visitorSchema = z.object({
+  fullName: z.string().trim().min(2, "Nome é obrigatório"),
+  phone: z.string().trim().optional().nullable(),
+  email: z
+    .string()
+    .trim()
+    .optional()
+    .nullable()
+    .refine(
+      (v) => !v || z.string().email().safeParse(v).success,
+      "E-mail inválido"
+    ),
+  invitedByMemberId: z.string().uuid().optional().nullable(),
+  invitedByText: z.string().trim().optional().nullable(),
+  firstVisitAt: z.string().optional().nullable(),
+  notes: z.string().trim().optional().nullable(),
+});
+
+export const visitorVisitSchema = z.object({
+  visitorId: z.string().uuid(),
+  visitedAt: z.string().optional().nullable(),
+  notes: z.string().trim().optional().nullable(),
+});

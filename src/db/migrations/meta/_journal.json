@@ -15,6 +15,13 @@
       "when": 1795657400691,
       "tag": "0001_many_dreaming_celestial",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795657746388,
+      "tag": "0002_past_zzzax",
+      "breakpoints": true
     }
   ]
 }

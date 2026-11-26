@@ -2,7 +2,7 @@ import "dotenv/config";
 import { count, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { memberFamilyLinks, members, user, userProfiles } from "@/db/schema";
+import { memberFamilyLinks, members, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
 import type { Role } from "@/lib/permissions";
 
 interface SeedUser {
@@ -87,6 +87,32 @@ async function main() {
     console.log(`${inserted.length} membros fictícios criados com vínculos familiares.`);
   } else {
     console.log(`Membros já populados (${total}).`);
+  }
+
+  const [{ total: visitorsTotal }] = await db.select({ total: count() }).from(visitors);
+  if (visitorsTotal === 0) {
+    const seedVisitors = [
+      { fullName: "Lucas Andrade", phone: "(11) 97777-2001", email: "lucas.andrade@exemplo.local", followUpStatus: "novo", invitedByText: "Convite na rua" },
+      { fullName: "Mariane Costa", phone: "(11) 97777-2002", email: null, followUpStatus: "em_contato", invitedByText: "Amiga da célula" },
+      { fullName: "Pedro Henrique Dias", phone: "(11) 97777-2003", email: "pedro.dias@exemplo.local", followUpStatus: "retornou", invitedByText: "Instagram" },
+      { fullName: "Larissa Souza", phone: "(11) 97777-2004", email: null, followUpStatus: "novo", invitedByText: "Culto de domingo" },
+      { fullName: "Thiago Nogueira", phone: "(11) 97777-2005", email: "thiago.nogueira@exemplo.local", followUpStatus: "nao_retornou", invitedByText: "Colega de trabalho" },
+      { fullName: "Vanessa Lima", phone: "(11) 97777-2006", email: null, followUpStatus: "em_contato", invitedByText: "Familiar" },
+      { fullName: "Felipe Barbosa", phone: "(11) 97777-2007", email: "felipe.barbosa@exemplo.local", followUpStatus: "retornou", invitedByText: "Evento especial" },
+      { fullName: "Renata Alves", phone: "(11) 97777-2008", email: null, followUpStatus: "novo", invitedByText: "Vizinha" },
+    ];
+    const insertedVisitors = await db
+      .insert(visitors)
+      .values(seedVisitors)
+      .returning({ id: visitors.id });
+
+    await db.insert(visitorVisits).values(
+      insertedVisitors.map((v) => ({
+        visitorId: v.id,
+        notes: "Primeira visita registrada no seed",
+      }))
+    );
+    console.log(`${insertedVisitors.length} visitantes fictícios criados.`);
   }
 
   console.log("Seed concluído com sucesso.");

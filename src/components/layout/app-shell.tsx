@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Users,
+  UserPlus,
   Wallet,
   Calendar,
   Shield,
@@ -54,6 +55,12 @@ const navGroups: NavGroup[] = [
     title: "Módulos",
     items: [
       { label: "Membros", href: "/membros", icon: Users, modulo: "membros" },
+      {
+        label: "Visitantes",
+        href: "/visitantes",
+        icon: UserPlus,
+        modulo: "visitantes",
+      },
       {
         label: "Aniversariantes",
         href: "/membros/aniversariantes",
