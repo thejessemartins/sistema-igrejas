@@ -376,3 +376,35 @@ export const noticeSchema = z
       path: ["expiresAt"],
     }
   );
+
+// --- Patrimônio ---
+
+export const ASSET_CATEGORIES = [
+  "som",
+  "instrumento",
+  "moveis",
+  "informatica",
+  "veiculo",
+  "cozinha",
+  "outro",
+] as const;
+
+export const ASSET_CONDITIONS = [
+  "novo",
+  "bom",
+  "regular",
+  "ruim",
+  "baixado",
+] as const;
+
+export const assetSchema = z.object({
+  name: z.string().trim().min(2, "Nome do bem é obrigatório"),
+  category: z.enum(ASSET_CATEGORIES),
+  patrimonyCode: z.string().trim().min(2, "Código de patrimônio é obrigatório"),
+  description: z.string().trim().optional().nullable(),
+  locationText: z.string().trim().optional().nullable(),
+  responsibleMemberId: z.string().uuid().optional().nullable(),
+  acquiredAt: z.string().optional().nullable(),
+  acquisitionValueCents: z.coerce.number().int().nonnegative().optional().nullable(),
+  condition: z.enum(ASSET_CONDITIONS).default("bom"),
+});

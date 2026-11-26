@@ -117,6 +117,12 @@ const navGroups: NavGroup[] = [
         icon: Megaphone,
         modulo: "avisos",
       },
+      {
+        label: "Patrimônio",
+        href: "/patrimonio",
+        icon: Briefcase,
+        modulo: "membros",
+      },
     ],
   },
   {

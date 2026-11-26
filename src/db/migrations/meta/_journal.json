@@ -78,6 +78,13 @@
       "when": 1795659965675,
       "tag": "0010_greedy_norman_osborn",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1795660237898,
+      "tag": "0011_goofy_bill_hollister",
+      "breakpoints": true
     }
   ]
 }

@@ -2,7 +2,7 @@ import "dotenv/config";
 import { count, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { cellMeetingAttendance, cellMeetings, cellMembers, cells, events, financialCategories, financialTransactions, memberFamilyLinks, members, ministries, ministryMembers, notices, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
+import { assets, cellMeetingAttendance, cellMeetings, cellMembers, cells, events, financialCategories, financialTransactions, memberFamilyLinks, members, ministries, ministryMembers, notices, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
 import type { Role } from "@/lib/permissions";
 
 interface SeedUser {
@@ -398,6 +398,25 @@ async function main() {
       },
     ]);
     console.log("5 avisos fictícios criados.");
+  }
+
+  const [{ total: assetsTotal }] = await db.select({ total: count() }).from(assets);
+  if (assetsTotal === 0) {
+    await db.insert(assets).values([
+      { name: "Mesa de Som Digital 32 Canais", category: "som", patrimonyCode: "PAT-001", locationText: "Templo Principal", condition: "bom", acquisitionValueCents: 1200000 },
+      { name: "Teclado Nord Stage", category: "instrumento", patrimonyCode: "PAT-002", locationText: "Templo Principal", condition: "bom", acquisitionValueCents: 1800000 },
+      { name: "Projetor Epson 5000 Lumens", category: "informatica", patrimonyCode: "PAT-003", locationText: "Templo Principal", condition: "bom", acquisitionValueCents: 450000 },
+      { name: "Notebook Transmissão", category: "informatica", patrimonyCode: "PAT-004", locationText: "Cabine de Mídia", condition: "novo", acquisitionValueCents: 520000 },
+      { name: "Conjunto 100 Cadeiras Estofadas", category: "moveis", patrimonyCode: "PAT-005", locationText: "Templo Principal", condition: "bom", acquisitionValueCents: 2500000 },
+      { name: "Púlpito Acrílico", category: "moveis", patrimonyCode: "PAT-006", locationText: "Altar", condition: "bom", acquisitionValueCents: 180000 },
+      { name: "Microfone Sem Fio Shure (Par)", category: "som", patrimonyCode: "PAT-007", locationText: "Templo Principal", condition: "bom", acquisitionValueCents: 380000 },
+      { name: "Bateria Acústica Completa", category: "instrumento", patrimonyCode: "PAT-008", locationText: "Templo Principal", condition: "regular", acquisitionValueCents: 650000 },
+      { name: "Fogão Industrial 6 Bocas", category: "cozinha", patrimonyCode: "PAT-009", locationText: "Cozinha", condition: "bom", acquisitionValueCents: 240000 },
+      { name: "Freezer Horizontal", category: "cozinha", patrimonyCode: "PAT-010", locationText: "Cozinha", condition: "bom", acquisitionValueCents: 310000 },
+      { name: "Ar-condicionado Split 60.000 BTUs", category: "outro", patrimonyCode: "PAT-011", locationText: "Templo Principal", condition: "bom", acquisitionValueCents: 980000 },
+      { name: "Mesa de Reunião Sala Pastoral", category: "moveis", patrimonyCode: "PAT-012", locationText: "Sala Pastoral", condition: "novo", acquisitionValueCents: 220000 },
+    ]);
+    console.log("12 bens patrimoniais fictícios criados.");
   }
 
   console.log("Seed concluído com sucesso.");
