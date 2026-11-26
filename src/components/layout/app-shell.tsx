@@ -128,6 +128,24 @@ const navGroups: NavGroup[] = [
         modulo: "usuarios",
       },
       {
+        label: "Igreja",
+        href: "/configuracoes/igreja",
+        icon: Church,
+        modulo: "permissoes",
+      },
+      {
+        label: "Importar CSV",
+        href: "/configuracoes/importar",
+        icon: Shield,
+        modulo: "permissoes",
+      },
+      {
+        label: "Backup",
+        href: "/configuracoes/backup",
+        icon: Shield,
+        modulo: "permissoes",
+      },
+      {
         label: "Auditoria",
         href: "/configuracoes/auditoria",
         icon: History,
