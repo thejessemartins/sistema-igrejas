@@ -313,3 +313,32 @@ export const scheduleSchema = z.object({
   title: z.string().trim().min(2, "Título da escala é obrigatório"),
   notes: z.string().trim().optional().nullable(),
 });
+
+// --- Financeiro ---
+
+export const PAYMENT_METHODS = [
+  "dinheiro",
+  "transferencia_manual",
+  "cheque",
+  "cartao_manual",
+  "outro",
+] as const;
+export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
+
+export const transactionSchema = z.object({
+  kind: z.enum(["receita", "despesa"]),
+  categoryId: z.string().uuid("Selecione a categoria"),
+  memberId: z.string().uuid().optional().nullable(),
+  isAnonymous: z.boolean().default(false),
+  visitorNameText: z.string().trim().optional().nullable(),
+  description: z.string().trim().min(2, "Descrição é obrigatória"),
+  amountCents: z.coerce
+    .number()
+    .int("Valor deve ser inteiro em centavos")
+    .positive("Valor deve ser maior que zero"),
+  transactionDate: z.string().min(1, "Data é obrigatória"),
+  paymentMethod: z.enum(PAYMENT_METHODS),
+  supplierText: z.string().trim().optional().nullable(),
+  dueDate: z.string().optional().nullable(),
+  paidAt: z.string().optional().nullable(),
+});

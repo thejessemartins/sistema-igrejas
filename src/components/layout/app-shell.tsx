@@ -79,7 +79,7 @@ const navGroups: NavGroup[] = [
       },
       {
         label: "Financeiro",
-        href: "#financeiro",
+        href: "/financeiro",
         icon: Wallet,
         modulo: "financeiro",
       },

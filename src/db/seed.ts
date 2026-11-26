@@ -2,7 +2,7 @@ import "dotenv/config";
 import { count, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { cellMeetingAttendance, cellMeetings, cellMembers, cells, events, memberFamilyLinks, members, ministries, ministryMembers, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
+import { cellMeetingAttendance, cellMeetings, cellMembers, cells, events, financialCategories, financialTransactions, memberFamilyLinks, members, ministries, ministryMembers, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
 import type { Role } from "@/lib/permissions";
 
 interface SeedUser {
@@ -256,6 +256,97 @@ async function main() {
       ]);
     }
     console.log(`${insertedMinistries.length} ministérios fictícios criados.`);
+  }
+
+  const [{ total: catTotal }] = await db
+    .select({ total: count() })
+    .from(financialCategories);
+  if (catTotal === 0) {
+    const insertedCats = await db
+      .insert(financialCategories)
+      .values([
+        { name: "Dízimos", kind: "receita" },
+        { name: "Ofertas", kind: "receita" },
+        { name: "Doações", kind: "receita" },
+        { name: "Cantina/Eventos", kind: "receita" },
+        { name: "Aluguel", kind: "despesa" },
+        { name: "Contas", kind: "despesa" },
+        { name: "Manutenção", kind: "despesa" },
+        { name: "Missões/Ajuda", kind: "despesa" },
+        { name: "Material", kind: "despesa" },
+        { name: "Salários/Prebendas", kind: "despesa" },
+      ])
+      .returning({ id: financialCategories.id, name: financialCategories.name, kind: financialCategories.kind });
+
+    const dizimo = insertedCats.find((c) => c.name === "Dízimos")!;
+    const oferta = insertedCats.find((c) => c.name === "Ofertas")!;
+    const aluguel = insertedCats.find((c) => c.name === "Aluguel")!;
+    const contas = insertedCats.find((c) => c.name === "Contas")!;
+
+    const now = new Date();
+    const thisMonth = now.toISOString().slice(0, 7);
+    const prevDate = new Date(now.getFullYear(), now.getMonth() - 1, 15);
+    const prevMonth = prevDate.toISOString().slice(0, 7);
+
+    const [firstMember] = await db.select({ id: members.id }).from(members).limit(1);
+
+    await db.insert(financialTransactions).values([
+      {
+        kind: "receita",
+        categoryId: dizimo.id,
+        memberId: firstMember?.id ?? null,
+        isAnonymous: false,
+        description: "Dízimo mensal",
+        amountCents: 150000,
+        transactionDate: `${prevMonth}-05`,
+        paymentMethod: "transferencia_manual",
+        paidAt: `${prevMonth}-05`,
+      },
+      {
+        kind: "receita",
+        categoryId: oferta.id,
+        isAnonymous: true,
+        description: "Oferta culto de domingo",
+        amountCents: 85000,
+        transactionDate: `${prevMonth}-12`,
+        paymentMethod: "dinheiro",
+        paidAt: `${prevMonth}-12`,
+      },
+      {
+        kind: "despesa",
+        categoryId: aluguel.id,
+        description: "Aluguel do templo",
+        supplierText: "Imobiliária Central",
+        amountCents: 120000,
+        transactionDate: `${prevMonth}-10`,
+        dueDate: `${prevMonth}-10`,
+        paidAt: `${prevMonth}-10`,
+        paymentMethod: "transferencia_manual",
+      },
+      {
+        kind: "receita",
+        categoryId: dizimo.id,
+        memberId: firstMember?.id ?? null,
+        isAnonymous: false,
+        description: "Dízimo mensal",
+        amountCents: 180000,
+        transactionDate: `${thisMonth}-05`,
+        paymentMethod: "transferencia_manual",
+        paidAt: `${thisMonth}-05`,
+      },
+      {
+        kind: "despesa",
+        categoryId: contas.id,
+        description: "Conta de energia elétrica",
+        supplierText: "Concessionária Local",
+        amountCents: 42000,
+        transactionDate: `${thisMonth}-08`,
+        dueDate: `${thisMonth}-10`,
+        paidAt: null, // pendente / vencida
+        paymentMethod: "transferencia_manual",
+      },
+    ]);
+    console.log("Categorias e 2 meses de lançamentos financeiros criados.");
   }
 
   console.log("Seed concluído com sucesso.");
