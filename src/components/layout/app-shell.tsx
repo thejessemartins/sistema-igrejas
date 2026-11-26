@@ -32,6 +32,7 @@ import {
 } from "@/lib/permissions";
 import type { AppSession } from "@/lib/session";
 import { logoutAction } from "@/server/actions/auth";
+import { OfflineBanner } from "./offline-banner";
 
 interface NavItem {
   label: string;
