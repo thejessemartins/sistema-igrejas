@@ -53,7 +53,13 @@ const navGroups: NavGroup[] = [
   {
     title: "Módulos",
     items: [
-      { label: "Membros", href: "#membros", icon: Users, modulo: "membros" },
+      { label: "Membros", href: "/membros", icon: Users, modulo: "membros" },
+      {
+        label: "Aniversariantes",
+        href: "/membros/aniversariantes",
+        icon: Calendar,
+        modulo: "membros",
+      },
       {
         label: "Financeiro",
         href: "#financeiro",
