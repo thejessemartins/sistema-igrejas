@@ -2,7 +2,7 @@ import "dotenv/config";
 import { count, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { assets, cellMeetingAttendance, cellMeetings, cellMembers, cells, ceremonies, events, financialCategories, financialTransactions, memberFamilyLinks, members, ministries, ministryMembers, notices, readingPlanDays, readingPlans, reservableResources, reservations, sermons, socialProjects, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
+import { assets, cellMeetingAttendance, cellMeetings, cellMembers, cells, ceremonies, events, financialCategories, financialTransactions, memberFamilyLinks, members, ministries, ministryMembers, notices, prayerRequests, readingPlanDays, readingPlans, reservableResources, reservations, sermons, socialProjects, user, userProfiles, visitors, visitorVisits } from "@/db/schema";
 import type { Role } from "@/lib/permissions";
 
 interface SeedUser {
@@ -532,6 +532,21 @@ async function main() {
     }));
     await db.insert(readingPlanDays).values(days);
     console.log("Plano de leitura de 30 dias criado.");
+  }
+
+  const [{ total: prTotal }] = await db
+    .select({ total: count() })
+    .from(prayerRequests);
+  if (prTotal === 0) {
+    await db.insert(prayerRequests).values([
+      { title: "Saúde da Família", body: "Oração pela recuperação de saúde.", visibility: "publico", isAnonymous: false, authorText: "Maria", status: "ativo" },
+      { title: "Emprego e Provisão", body: "Porta de emprego.", visibility: "publico", isAnonymous: true, authorText: "Anônimo", status: "ativo" },
+      { title: "Missões Locais", body: "Pelos missionários da cidade.", visibility: "intercessores", isAnonymous: false, authorText: "Secretaria", status: "ativo" },
+      { title: "Aconselhamento Familiar", body: "Situação delicada familiar.", visibility: "pastoral", isAnonymous: false, authorText: "Membro", status: "ativo" },
+      { title: "Agradecimento por Cura", body: "Deus respondeu nossa oração!", visibility: "publico", isAnonymous: false, authorText: "Carlos", status: "atendido" },
+      { title: "Direção Ministerial", body: "Sabedoria para decisões.", visibility: "pastoral", isAnonymous: false, authorText: "Pastor", status: "ativo" },
+    ]);
+    console.log("6 pedidos de oração fictícios criados.");
   }
 
   console.log("Seed concluído com sucesso.");

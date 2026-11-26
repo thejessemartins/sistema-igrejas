@@ -120,6 +120,13 @@
       "when": 1795661496769,
       "tag": "0016_redundant_white_queen",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1795661670729,
+      "tag": "0017_thin_black_knight",
+      "breakpoints": true
     }
   ]
 }

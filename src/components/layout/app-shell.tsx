@@ -153,6 +153,12 @@ const navGroups: NavGroup[] = [
         icon: CheckSquare,
         modulo: "dashboard",
       },
+      {
+        label: "Oração",
+        href: "/oracao",
+        icon: Megaphone,
+        modulo: "dashboard",
+      },
     ],
   },
   {
