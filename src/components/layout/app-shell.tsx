@@ -12,6 +12,7 @@ import {
   Briefcase,
   ClipboardList,
   Megaphone,
+  BarChart3,
   Wallet,
   Calendar,
   Shield,
@@ -50,9 +51,15 @@ const navGroups: NavGroup[] = [
     items: [
       {
         label: "Início",
-        href: "/",
+        href: "/painel",
         icon: LayoutDashboard,
         modulo: "dashboard",
+      },
+      {
+        label: "Relatórios",
+        href: "/relatorios",
+        icon: BarChart3,
+        modulo: "relatorios",
       },
     ],
   },
