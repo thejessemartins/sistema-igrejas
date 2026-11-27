@@ -23,6 +23,8 @@ import {
   X,
   LogOut,
   Church,
+  FileText,
+  ShoppingBag,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -92,6 +94,12 @@ const navGroups: NavGroup[] = [
         icon: Wallet,
         modulo: "financeiro",
       },
+      {
+        label: "Recorrentes",
+        href: "/financeiro/recorrentes",
+        icon: Wallet,
+        modulo: "financeiro",
+      },
       { label: "Eventos", href: "/cultos", icon: Calendar, modulo: "cultos" },
       {
         label: "Presença",
@@ -127,6 +135,90 @@ const navGroups: NavGroup[] = [
         label: "Reservas",
         href: "/reservas",
         icon: Calendar,
+        modulo: "dashboard",
+      },
+      {
+        label: "Documentos",
+        href: "/documentos",
+        icon: FileText,
+        modulo: "dashboard",
+      },
+      {
+        label: "Loja / Cantina",
+        href: "/loja/vender",
+        icon: ShoppingBag,
+        modulo: "dashboard",
+      },
+      {
+        label: "Pesquisas",
+        href: "/pesquisas",
+        icon: ClipboardList,
+        modulo: "dashboard",
+      },
+      {
+        label: "Bairros",
+        href: "/relatorios/bairros",
+        icon: Home,
+        modulo: "relatorios",
+      },
+      {
+        label: "Fornecedores",
+        href: "/financeiro/fornecedores",
+        icon: Briefcase,
+        modulo: "financeiro",
+      },
+      {
+        label: "Transporte",
+        href: "/transporte",
+        icon: Calendar,
+        modulo: "dashboard",
+      },
+      {
+        label: "Talentos",
+        href: "/ministerios/talentos",
+        icon: Users,
+        modulo: "ministerios",
+      },
+      {
+        label: "Agenda Pastoral",
+        href: "/agenda-pastoral",
+        icon: Calendar,
+        modulo: "dashboard",
+      },
+      {
+        label: "Jornada",
+        href: "/membros/jornada",
+        icon: Users,
+        modulo: "membros",
+      },
+      {
+        label: "Cursos / EBD",
+        href: "/cursos",
+        icon: ClipboardList,
+        modulo: "dashboard",
+      },
+      {
+        label: "Check-in Infantil",
+        href: "/infantil/check-in",
+        icon: CheckSquare,
+        modulo: "dashboard",
+      },
+      {
+        label: "Louvor",
+        href: "/louvor/musicas",
+        icon: Megaphone,
+        modulo: "dashboard",
+      },
+      {
+        label: "Acessibilidade",
+        href: "/acessibilidade",
+        icon: Shield,
+        modulo: "minha_conta",
+      },
+      {
+        label: "Mensagens",
+        href: "/mensagens",
+        icon: Megaphone,
         modulo: "dashboard",
       },
       {

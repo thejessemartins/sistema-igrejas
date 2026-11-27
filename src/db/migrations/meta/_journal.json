@@ -134,6 +134,34 @@
       "when": 1795661777657,
       "tag": "0018_woozy_electro",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1795740757902,
+      "tag": "0019_nosy_flatman",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1795741236028,
+      "tag": "0020_mature_blue_blade",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1795741798178,
+      "tag": "0021_clear_iron_fist",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1795743573397,
+      "tag": "0022_curious_night_nurse",
+      "breakpoints": true
     }
   ]
 }

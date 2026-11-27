@@ -9,10 +9,12 @@ import { SchedulesClient } from "./schedules-client";
 export default async function EscalasPage() {
   const session = await requirePermission("escalas", "ver");
 
+  const canViewMinistries = hasPermission(session, "ministerios", "ver");
+
   const [items, eventsList, ministriesList] = await Promise.all([
     getSchedules(),
     getEvents(),
-    getMinistries(),
+    canViewMinistries ? getMinistries() : Promise.resolve([]),
   ]);
 
   return (

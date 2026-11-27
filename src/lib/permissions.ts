@@ -41,7 +41,7 @@ type PermissionMatrix = Record<Role, Partial<Record<ModuleName, ActionName[]>>>;
 
 const ALL_ACTIONS: ActionName[] = ["ver", "criar", "editar", "excluir", "exportar"];
 
-const MATRIX: PermissionMatrix = {
+export const PERMISSION_MATRIX: PermissionMatrix = {
   admin: {
     dashboard: ALL_ACTIONS,
     membros: ALL_ACTIONS,
@@ -127,9 +127,9 @@ export function hasPermission(
   if (!session?.user) return false;
   if (session.user.active === false) return false;
   const role = session.user.role as Role | undefined;
-  if (!role || !(role in MATRIX)) return false;
+  if (!role || !(role in PERMISSION_MATRIX)) return false;
 
-  const allowed = MATRIX[role][modulo];
+  const allowed = PERMISSION_MATRIX[role][modulo];
   if (!allowed) return false;
   return allowed.includes(acao);
 }
