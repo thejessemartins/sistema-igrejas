@@ -41,6 +41,7 @@ export const financialTransactions = pgTable("financial_transactions", {
     onDelete: "set null",
   }),
   supplierText: text("supplier_text"),
+  supplierId: uuid("supplier_id"),
   dueDate: date("due_date"),
   paidAt: date("paid_at"),
   attachmentPath: text("attachment_path"),
