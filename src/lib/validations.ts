@@ -341,6 +341,27 @@ export const transactionSchema = z.object({
   supplierText: z.string().trim().optional().nullable(),
   dueDate: z.string().optional().nullable(),
   paidAt: z.string().optional().nullable(),
+  recurringOccurrenceId: z.string().uuid().optional().nullable(),
+});
+
+export const recurringCommitmentSchema = z.object({
+  memberId: z.string().uuid("Selecione o membro"),
+  categoryId: z.string().uuid("Selecione a categoria de receita"),
+  amountCents: z.coerce
+    .number()
+    .int("Valor deve ser inteiro em centavos")
+    .positive("Valor deve ser maior que zero"),
+  frequency: z.enum(["mensal", "semanal"]),
+  dayOfMonth: z.coerce
+    .number()
+    .int()
+    .min(1, "Dia deve ser entre 1 e 31")
+    .max(31, "Dia deve ser entre 1 e 31")
+    .optional()
+    .nullable(),
+  startsAt: z.string().min(1, "Data de início é obrigatória"),
+  endsAt: z.string().optional().nullable(),
+  notes: z.string().trim().max(500).optional().nullable(),
 });
 
 // --- Avisos ---

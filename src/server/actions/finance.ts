@@ -3,7 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { and, eq, isNull, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { financialTransactions, monthlyClosings } from "@/db/schema";
+import {
+  financialTransactions,
+  monthlyClosings,
+  recurringOccurrences,
+} from "@/db/schema";
 import { requirePermission } from "@/lib/session";
 import { transactionSchema } from "@/lib/validations";
 import { logAudit } from "@/server/services/audit";
@@ -39,18 +43,36 @@ export async function createTransaction(input: unknown): Promise<ActionResult> {
     };
   }
 
-  const [created] = await db
-    .insert(financialTransactions)
-    .values({
-      ...parsed.data,
-      memberId: parsed.data.isAnonymous ? null : parsed.data.memberId || null,
-      visitorNameText: parsed.data.visitorNameText || null,
-      supplierText: parsed.data.supplierText || null,
-      dueDate: parsed.data.dueDate || null,
-      paidAt: parsed.data.paidAt || null,
-      createdBy: session.user.id,
-    })
-    .returning({ id: financialTransactions.id });
+  const { recurringOccurrenceId, ...txValues } = parsed.data;
+
+  const created = await db.transaction(async (tx) => {
+    const [inserted] = await tx
+      .insert(financialTransactions)
+      .values({
+        ...txValues,
+        memberId: txValues.isAnonymous ? null : txValues.memberId || null,
+        visitorNameText: txValues.visitorNameText || null,
+        supplierText: txValues.supplierText || null,
+        dueDate: txValues.dueDate || null,
+        paidAt: txValues.paidAt || null,
+        createdBy: session.user.id,
+      })
+      .returning({ id: financialTransactions.id });
+
+    if (recurringOccurrenceId) {
+      await tx
+        .update(recurringOccurrences)
+        .set({ financialTransactionId: inserted.id })
+        .where(
+          and(
+            eq(recurringOccurrences.id, recurringOccurrenceId),
+            isNull(recurringOccurrences.financialTransactionId)
+          )
+        );
+    }
+
+    return inserted;
+  });
 
   await logAudit({
     userId: session.user.id,
@@ -66,6 +88,8 @@ export async function createTransaction(input: unknown): Promise<ActionResult> {
   revalidatePath("/financeiro");
   revalidatePath("/financeiro/lancamentos");
   revalidatePath("/financeiro/contas");
+  revalidatePath("/financeiro/recorrentes");
+  revalidatePath("/painel");
   return { ok: true, message: "Lançamento registrado com sucesso." };
 }
 

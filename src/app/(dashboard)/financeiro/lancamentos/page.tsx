@@ -7,16 +7,25 @@ import {
   getFinancialCategories,
   getTransactions,
 } from "@/server/queries/finance";
+import { getRecurringOccurrenceForPrefill } from "@/server/queries/recurring";
 import { TransactionsClient } from "./transactions-client";
 
-export default async function LancamentosPage() {
+export default async function LancamentosPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ occurrenceId?: string }>;
+}) {
   const session = await requirePermission("financeiro", "ver");
+  const { occurrenceId } = await searchParams;
 
-  const [items, categories, membersList] = await Promise.all([
-    getTransactions(),
-    getFinancialCategories(),
-    searchMembersForSelect(""),
-  ]);
+  const [items, categories, membersList, prefillOccurrence] = await Promise.all(
+    [
+      getTransactions(),
+      getFinancialCategories(),
+      searchMembersForSelect(""),
+      occurrenceId ? getRecurringOccurrenceForPrefill(occurrenceId) : null,
+    ]
+  );
 
   return (
     <div className="space-y-6">
@@ -38,6 +47,7 @@ export default async function LancamentosPage() {
         categories={categories}
         membersList={membersList}
         canCreate={hasPermission(session, "financeiro", "criar")}
+        prefillOccurrence={prefillOccurrence}
       />
     </div>
   );

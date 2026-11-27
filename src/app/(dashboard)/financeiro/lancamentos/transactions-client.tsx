@@ -16,6 +16,7 @@ export function TransactionsClient({
   categories,
   membersList,
   canCreate,
+  prefillOccurrence,
 }: {
   items: Array<{
     id: string;
@@ -30,17 +31,33 @@ export function TransactionsClient({
   categories: Array<{ id: string; name: string; kind: string }>;
   membersList: Array<{ id: string; fullName: string }>;
   canCreate: boolean;
+  prefillOccurrence?: {
+    id: string;
+    dueDate: string;
+    memberId: string;
+    memberName: string;
+    categoryId: string;
+    amountCents: number;
+  } | null;
 }) {
   const router = useRouter();
-  const [showCreate, setShowCreate] = useState(false);
+  const [showCreate, setShowCreate] = useState(Boolean(prefillOccurrence));
   const [kind, setKind] = useState<"receita" | "despesa">("receita");
-  const [categoryId, setCategoryId] = useState(categories[0]?.id ?? "");
-  const [memberId, setMemberId] = useState("");
+  const [categoryId, setCategoryId] = useState(
+    prefillOccurrence?.categoryId ?? categories[0]?.id ?? ""
+  );
+  const [memberId, setMemberId] = useState(prefillOccurrence?.memberId ?? "");
   const [isAnonymous, setIsAnonymous] = useState(false);
-  const [description, setDescription] = useState("");
-  const [amountReais, setAmountReais] = useState("");
+  const [description, setDescription] = useState(
+    prefillOccurrence
+      ? `Contribuição recorrente - ${prefillOccurrence.memberName}`
+      : ""
+  );
+  const [amountReais, setAmountReais] = useState(
+    prefillOccurrence ? (prefillOccurrence.amountCents / 100).toFixed(2) : ""
+  );
   const [transactionDate, setTransactionDate] = useState(
-    new Date().toISOString().slice(0, 10)
+    prefillOccurrence?.dueDate ?? new Date().toISOString().slice(0, 10)
   );
   const [paymentMethod, setPaymentMethod] =
     useState<PaymentMethod>("dinheiro");
@@ -69,6 +86,7 @@ export function TransactionsClient({
       supplierText: kind === "despesa" ? supplierText : null,
       dueDate: dueDate || null,
       paidAt: dueDate ? null : transactionDate,
+      recurringOccurrenceId: prefillOccurrence?.id ?? null,
     });
 
     if (!res.ok) return setErr(res.error);

@@ -4,10 +4,14 @@ import { SeraCard } from "@/components/shared/sera-card";
 import { MoneyText } from "@/components/shared/money-text";
 import { requireSession } from "@/lib/session";
 import { getDashboardStats } from "@/server/queries/dashboard";
+import { getMyRecurringCommitments } from "@/server/queries/recurring";
 
 export default async function PainelPage() {
   const session = await requireSession();
-  const stats = await getDashboardStats(session);
+  const [stats, myCommitments] = await Promise.all([
+    getDashboardStats(session),
+    getMyRecurringCommitments(session.user.memberId),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -58,6 +62,32 @@ export default async function PainelPage() {
           </SeraCard>
         ) : null}
       </div>
+
+      {myCommitments.length > 0 && (
+        <SeraCard title="Minhas contribuições">
+          <div className="divide-y divide-neutral-100">
+            {myCommitments.map((c) => (
+              <div
+                key={c.id}
+                className="flex items-center justify-between py-2 text-sm"
+              >
+                <div>
+                  <p className="font-medium text-neutral-900">
+                    {c.categoryName} ({c.frequency})
+                  </p>
+                  <p className="text-xs text-neutral-500">
+                    Status: {c.status} · Início: {c.startsAt}
+                  </p>
+                </div>
+                <MoneyText
+                  cents={c.amountCents}
+                  className="font-semibold text-neutral-900"
+                />
+              </div>
+            ))}
+          </div>
+        </SeraCard>
+      )}
     </div>
   );
 }
